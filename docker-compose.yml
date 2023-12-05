@@ -107,7 +107,7 @@ services:
     networks:
       - wp-nwk-utilisateur-categorie
     volumes:
-      - wp-db-users-categories-data
+      - wp-db-users-categories-data:/var/opt/mssql
 
   eureka-server:
     image:  steeltoeoss/eureka-server
