@@ -1,0 +1,120 @@
+version: '1.0'
+
+networks:
+  wp-nwk: {}
+  wp-nwk-history: {}
+  wp-nwk-moovie: {}
+  wp-nwk-moovie-detail: {}
+  wp-nwk-utilisateur-categorie: {}
+
+volumes:
+  wp-db-paiement-data:
+  wp-static:
+  wp-db-authent-data:
+  wp-db-users-categories-data:
+  wp-db-log-data:
+  wp-db-history-data:
+  wp-db-moovie-data:
+  wp-db-moovie-details-data:
+
+services:
+  wp-mysql-paiement-service: 
+    image: mysql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_USER=paiement-service
+      - MYSQL_PASSWORD=paiement-service
+      - MYSQL_DATABASE=paiement
+      - MYSQL_TCP_PORT=3306
+    networks:
+      - wp-nwk
+    volumes:
+      - wp-db-paiement-data:/var/lib/mysql
+    ports:
+      - "10000:3306"
+
+
+  wp-mysql-authentification-service:
+    image: mysql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_DATABASE=db-authent
+      - MYSQL_USER=authent-service
+      - MYSQL_PASSWORD=authent-service
+      - MYSQL_TCP_PORT=3307
+    networks:
+      - wp-nwk
+    volumes:
+      - wp-db-authent-data:/var/lib/mysql
+    ports:
+      - "11000:3307"
+
+  microflix-log-mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+      SA_PASSWORD: "l0gservicepassword$!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "12000:1433"
+    networks:
+      - wp-nwk
+    volumes:
+      - wp-db-log-data:/var/opt/mssql
+
+  microflix-history-mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+      SA_PASSWORD: "h1storyservicepassword$!"
+      ACCEPT_EULA: "Y"
+    networks:  
+      - wp-nwk-history
+    ports:
+      - "14000:1433"
+    volumes:
+      - wp-db-history-data:/var/opt/mssql
+
+  microflix-moovie-mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      SA_PASSWORD: "AvisD!mposiT!0n"
+      ACCEPT_EULA: "Y"     
+    networks:
+      - wp-nwk-moovie
+    ports:
+      - "15000:1433"
+    volumes:
+      - wp-db-moovie-data:/var/opt/mssql 
+
+  microflix-moovie-details-mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      SA_PASSWORD: "F1lmservicepassword$!"
+      ACCEPT_EULA: "Y" 
+    networks:
+      - wp-nwk-moovie-detail
+    ports:
+      - "16000:1433"
+    volumes:
+      - wp-db-moovie-details-data:/var/opt/mssql
+
+  microflix-utilisateur-categorie-mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment:
+      SA_PASSWORD: "SqlServerPass123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "17000:1433"
+    networks:
+      - wp-nwk-utilisateur-categorie
+    volumes:
+      - wp-db-users-categories-data
+
+  eureka-server:
+    image:  steeltoeoss/eureka-server
+    networks:
+      - wp-nwk
+    ports:
+      - "8761:8761"
+    
+
+    
